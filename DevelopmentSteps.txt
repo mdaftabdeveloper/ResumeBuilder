@@ -1,0 +1,60 @@
+# Section 1 - Development Steps (Project Setup and register module setup)
+
+Step1: Setup the backend project, create spring boot project (https://start.spring.io) - Web, MongoDB,
+        Lombok, Validation.
+
+Step2: Configure the MongoDB database.
+
+Step3: Create application health check API endpoint.
+
+Step4: Create register API 'api/auth/register'
+    - create request and response object
+    - create Document object to map mongodb collection
+    - create mongo repository
+    - create service
+    - create controller
+    - test the API endpoint.
+
+Step5: Send verification email to registered email address
+    - add the spring email dependency
+    - create a account in Brevo and smtp server details
+    - add the smtp server details in application.properties file
+    - create email service to send email
+    - update the AuthService to call email service method
+
+Step6: Verify the token
+    - create a new API endpoint 'api/auth/verify-email'
+    - create a finder() method in repository
+    - create a service method to verify the token
+    - update the property isEmailVarified to true
+
+
+# Section 2 - Development Steps (Cloudinary Setup)
+
+Step1: Add the cloudinary dependency
+
+Step2: Add the cloudinary configuration
+
+Step3: Create FileUploadService
+
+Step4: Create API endpoint 'api/auth/upload-image'
+
+Step5: Test the endpoint
+
+# Section 3 - Development Process (Spring security, password hashing and login module)
+
+Step1: Add the spring security dependency
+
+Step2: Configure the spring security filter chain
+
+Step3: Encode the password while registering new account
+
+Step4: Create login request
+
+Step5: Create API endpoint 'api/auth/login' for login
+
+Step6: Create custom filter to validate JWT token
+
+Step7: Register the filter
+
+Step8: Create JwtAuthenticationEntryPoint to handle the authentication exception

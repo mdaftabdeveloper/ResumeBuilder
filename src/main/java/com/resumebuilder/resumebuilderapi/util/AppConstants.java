@@ -5,4 +5,6 @@ public class AppConstants {
     public static final String REGISTER = "/register";
     public static final String VERIFY_EMAIL = "/verify-email";
     public static final String UPLOAD_IMAGE = "/upload-image";
+    public static final String LOGIN = "/login";
+    public static final String RESEND_VERIFICATION = "/resend-verification";
 }
