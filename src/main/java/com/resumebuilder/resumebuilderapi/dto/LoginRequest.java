@@ -11,6 +11,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+
+/*
+This class is the Data Transfer Object of the login request
+Two fields of the user will be coming from the request i.e. email and password
+Required Spring validation is used on both the fields
+ */
 public class LoginRequest {
 
     @NotBlank(message = "email is required")

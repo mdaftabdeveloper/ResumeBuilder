@@ -37,6 +37,12 @@ public class AuthService  {
 
     private final JwtUtil jwtUtil;
 
+    /*
+    This method is used to send response to the client while registering or logging in
+    It accepts user as an argument and return the AuthResponse
+    The reponse is build using the following attributes of the user
+     */
+    // TODO: Method to send the reponse
     private AuthResponse toResponse(User newUser) {
         return AuthResponse.builder()
                 .id(newUser.getId())
@@ -50,6 +56,12 @@ public class AuthService  {
                 .build();
     }
 
+    /*
+    This method is used to document the incoming user during user registration
+    It is used to build the object of User and map it to document to save in db
+    It returns a User and accepts @RequestBody request to build the user
+     */
+    // TODO: Method to build the user to document in order to map to db
     private User toDocument (RegisterRequest request) {
         return User.builder()
                 .name(request.getName())
@@ -63,11 +75,19 @@ public class AuthService  {
                 .build();
     }
 
+    /*
+    The method sendVerificationEmail() is used to send the verification link to the user's registered email address
+    It forms the link and html content to be delivered to the user
+     */
     // TODO: Method to send verification email
     private void sendVerificationEmail(User newUser) {
         log.info("Inside AuthService - sendVerificationEmail(): {}", newUser);
          try {
+
+             // TODO: Form the verification link
             String link = appBaseUrl + "api/auth/verify-email?token="+newUser.getVerificationToken();
+
+            // TODO: Form the HTML to be shown on user's mail
              String html = "<div style='font-family:sans-serif;'>" +
                      "<h2>Verify your email</h2>" +
                      "<p>Hi " + newUser.getName() + ", please confirm your email to activate your account.</p>" +
@@ -81,14 +101,24 @@ public class AuthService  {
                      "</div>";
 
 
+             // TODO: Send the email
              emailService.sendHtmlEmail(newUser.getEmail(), "Verify your email", html);
 
          } catch (Exception e) {
+             // incase error occurred during sending email
              log.error("Exception occured at sendVerification(): {}", e.getMessage());
              throw new RuntimeException("Failed to send verification email: " + e.getMessage());
          }
     }
 
+    /*
+    This is register() method to register new user
+    @RequestBody request is received as parameter which contains the attributes of a user
+    First check the user is already registered or not in db using email, if registered, then throw the exception using global exeception handler
+    Now document the request into the new user and save the user in db
+    Then send the verification link to activate the user and set isEmailVerified field to true in db
+    Now return the response.
+     */
     // TODO: Method to register new user
     public AuthResponse register (RegisterRequest request) {
         log.info("Inside AuthService: register() {}", request);
@@ -142,41 +172,66 @@ public class AuthService  {
         userRepository.save(user);
     }
 
+    /*
+    this is login() method which accepts @RequestBody request as a parameter
+    @RequestBody request contains two fields, email and password
+    Fetch the exisiting user from db using email
+    Match the password
+    Check the email is verified or not
+    Generate the JWT token and return the response
+     */
+    // TODO: Method to login the user
     public AuthResponse login(LoginRequest request) {
+
+        // TODO: Check the user exists or not in db
         User existingUser = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(()-> new UsernameNotFoundException("Invalid email or password"));
 
+        // TODO: Match the password
         if (!passwordEncoder.matches(request.getPassword(), existingUser.getPassword())) {
             throw  new UsernameNotFoundException("Invalid email or password");
         }
-
+        // TODO: Check email is verified or not
         if(!existingUser.getEmailVerified()) {
             throw new RuntimeException("Please verify your email before loggin in");
         }
 
-        // TODO: JWT Token is not hard coded. Later it will be added
+        // TODO: Generate the JWT token
         String token = jwtUtil.genrateToken(existingUser.getId());
+
+        // TODO: Generate the response
         AuthResponse response = toResponse(existingUser);
         response.setToken(token);
+
+        // TODO: Return the response
         return response;
 
 
     }
 
 
+    /*
+    This method is used to send the reverification link to the user's email address
+    Following steps are mentioned
+     */
+    // TODO: Method to send verification link
     public void resendVerification(String email) {
+
         // TODO: Fetch the user account by email
         User user = userRepository.findByEmail(email).orElseThrow(()-> new RuntimeException("User not found"));
+
         // TODO: Check the email is verified or not
         if (user.getEmailVerified()) {
             throw new RuntimeException("User is already verified");
         }
+
         // TODO: Set the new verification token and expires time
         user.setVerificationToken(UUID.randomUUID().toString());
         user.setVerificationExpires(LocalDateTime.now().plusHours(24));
 
         // TODO: Update the user
         userRepository.save(user);
+
         // TODO: Resend the verification email
         sendVerificationEmail(user);
 
